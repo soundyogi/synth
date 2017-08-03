@@ -2,9 +2,27 @@
 var grid = {};
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
 
-var frequencies = [523.25, 493.88, 440.00, 392.00, 349.23, 329.63, 293.66, 261.63];
+var frequencies = [];
+var MAJOR_SCALE = [0,2,4,5,7,9,11];
+var MINOR_SCALE = [0,2,3,5,7,8,10];
+var CHORD_PROGRESSION = [0, 4, 5, 3];
+var BASE_NOTE = 60;
+var BPM = 120;
+var currentTick = 0;
+var currentTab = 0;
+
+function generateFrequencies()
+{
+	for(var i = 0; i < 127; ++i)
+	{
+		a = Math.pow(2,1.0/12.0);
+		frequencies[i] = 440 * Math.pow(a, i - 81);
+	}
+}
+
 function init()
 {
+	generateFrequencies();
 	for(var i = 0; i < WIDTH; ++i)
 	{
 		grid[i] = {};
@@ -41,9 +59,26 @@ function toggleGridButton(e)
 	}
 }
 
+function getNote(base, scale, chord, id)
+{
+	var scaleId = (7-id) + chord;
+	var note = base + scale[scaleId%7]+(Math.floor(scaleId/7)*12);
+	return frequencies[note];
+}
+
 function onTick()
 {
-	currentTick = (currentTick + 1)%WIDTH;
+	++currentTick;
+	if(currentTick >= WIDTH)
+	{
+		currentTick = 0;
+		++currentTab;
+		if(currentTab >= 4)
+		{
+			currentTab = 0;
+		}
+	}
+	
     var now = audioCtx.currentTime;
 	for(var j = 0; j < HEIGHT; ++j)
 	{
@@ -51,6 +86,7 @@ function onTick()
 		var g = grid[currentTick][j];
 		if(g.active)
 		{
+			var frequency = getNote(BASE_NOTE, MAJOR_SCALE, CHORD_PROGRESSION[currentTab], j);
 			var gain = audioCtx.createGain();
 			gain.connect(audioCtx.destination);
 			gain.gain.setValueAtTime(0, now);
@@ -58,19 +94,19 @@ function onTick()
 			gain.gain.linearRampToValueAtTime(0.0, now + 0.5);
 			var oscillator = audioCtx.createOscillator();
 			oscillator.type = "sine";
-			oscillator.frequency.value = frequencies[j];
+			oscillator.frequency.value = frequency;
 			oscillator.start();
 			oscillator.stop(now + 0.5);
 			oscillator.connect(gain);
 			var oscillator2 = audioCtx.createOscillator();
 			oscillator2.type = "sine";
-			oscillator2.frequency.value = frequencies[j]+2;
+			oscillator2.frequency.value = frequency+2;
 			oscillator2.start();
 			oscillator2.stop(now + 0.5);
 			oscillator2.connect(gain);
 			var oscillator3 = audioCtx.createOscillator();
 			oscillator3.type = "sine";
-			oscillator3.frequency.value = frequencies[j]-2;
+			oscillator3.frequency.value = frequency-2;
 			oscillator3.start();
 			oscillator3.stop(now + 0.5);
 			oscillator3.connect(gain);
@@ -78,7 +114,5 @@ function onTick()
 	}
 }
 
-
-
 init();
-var ticks = setInterval(onTick, 300);
+var ticks = setInterval(onTick, (60/(BPM*2))*1000);

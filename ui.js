@@ -3,7 +3,6 @@ var WIDTH = 8;
 var HEIGHT = 8;
 
 var buttons = {};
-var currentTick = 0;
 
 
 function buildGrid(table)
