@@ -1,0 +1,13 @@
+.grid_button {
+    background-color: #243;
+    border: 2px solid #000;
+	border-radius: 4px
+    color: white;
+    padding: 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+	-webkit-transition-duration: 0.2s; /* Safari */
+    transition-duration: 0.2s;
+}
