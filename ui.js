@@ -21,7 +21,6 @@ function ui_init(){
 	STATE.sequencer = sequencer
 
 	sequencer.on('step',function(row) {
-	  console.log(row);
 
     row.reverse().forEach(function( data,id ){
       if(data){
