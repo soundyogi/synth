@@ -11,3 +11,29 @@
 	-webkit-transition-duration: 0.2s; /* Safari */
     transition-duration: 0.2s;
 }
+
+.dot {
+  position: relative;
+  background-color: #333;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  margin: 5px;
+  float: left;
+}
+
+@-webkit-keyframes flash {
+    0% {
+        background-color: #bbb;
+    }
+    100% {
+        background-color: #333;
+    }
+}
+
+.beat {
+    -webkit-animation-name: flash;
+    -webkit-animation-duration: 5ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-out;
+}
